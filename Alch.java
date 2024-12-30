@@ -7,14 +7,17 @@ import java.util.Scanner;
 
 public class Alch{
     static Map<String, int[]> ingredients = new HashMap<>();
-    final static String[] states = {"", "Sliced ", "powder", "solution", "destillat", "Crystalline "}; // 
+    static Map<String, int[]> aspects = new HashMap<>();
+    final static String[] states = {"", "Sliced ", "Powdered ", "Dissolved ", "Destillet ", "Crystalline "}; // 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Setup();
+        FileToHash("ingredients.csv", ingredients);
+        FileToHash("aspects.csv", aspects);
+
         menu(scanner);
     }
     public static void menu(Scanner scanner){
-        System.out.println("View Inventory: 0, Convert Material: 1, Visit City: 2, Get Help");
+        System.out.println("View Inventory: 0, Convert Material: 1, Visit City: 2, Brew: 3, Nothing: 4, Exit: 5");
         String dec = scanner.nextLine();
         switch (dec) {
             case "0"-> {
@@ -34,6 +37,15 @@ public class Alch{
             case "2"->{
                 City(scanner);
             }
+            case "3"->{
+                Brew(scanner);
+            }
+            case "4"->{
+                City(scanner);
+            }
+            case "5"->{
+                break;
+            }
             default -> {
                 System.out.println("Wrong Input");
                 menu(scanner);
@@ -44,18 +56,19 @@ public class Alch{
 
     // Read data from file and store it in hasmap for easier working
     // csv needs to be whitespace free
-    public static void Setup(){
-        File ing = new File("ingredients.csv");
+    public static void FileToHash(String file, Map<String, int[]> map){
+        File ing = new File(file);
         try (Scanner fileScanner = new Scanner(ing)) {
+            fileScanner.nextLine(); // Skip the first line since it has comments in it
             while (fileScanner.hasNextLine()) {
-            String line = fileScanner.nextLine();
-            String[] parts = line.split(",");
-            String ingredient = (String) parts[0];
-            int[] counts = new int[5];
-            for (int i = 1; i < parts.length; i++) {
-                counts[i - 1] = Integer.parseInt(parts[i]);
-            }
-            ingredients.put(ingredient, counts);
+                String line = fileScanner.nextLine();
+                String[] parts = line.split(",");
+                String ingredient = (String) parts[0];
+                int[] counts = new int[5];
+                for (int i = 1; i < parts.length; i++) {
+                    counts[i - 1] = Integer.parseInt(parts[i]);
+                }
+                map.put(ingredient, counts);
             }
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + e.getMessage());
@@ -74,17 +87,17 @@ public class Alch{
             int[] counts = entry.getValue();
             System.out.println("Ingredient: " + ingredient);
             for (int i = 0; i < 4; i++) {
-                System.out.println("State " + states[i] + " count: " + counts[i]);
+                System.out.println(states[i] + ingredient +" x" + counts[i]);
             }
             System.out.println();
         }
     }
 
-    public static void OUT_SINGLE(String ingridiant){
-        int[] counts = ingredients.get(ingridiant);
-        System.out.println("Ingredient: " + ingridiant);
+    public static void OUT_SINGLE(String ingredient){
+        int[] counts = ingredients.get(ingredient);
+        System.out.println("Ingredient: " + ingredient);
         for (int i = 0; i < 4; i++) {
-            System.out.println("State " + states[i] + " count: " + counts[i]);
+            System.out.println(states[i] + ingredient +" x" + counts[i]);
         }
         System.out.println();
     }
@@ -132,6 +145,21 @@ public class Alch{
     public static void City(Scanner scanner){
         System.out.println("Welcome to the city, there is nothing yet here.");
         menu(scanner);
+    }
+
+    public static void Brew(Scanner scanner){
+        OUT_ALL();
+        System.out.println(GetTextblock());
+        System.out.println("--------------------------------------------------------------------");
+
+    }
+
+    public static String GetTextblock(){
+        return """
+                Enter Up to 5 different ingredients to the pot.
+                Leftovers can only be voidet at the moment, unlock newer tech/ wait for a newer game version to change that.
+                Enter the Name and Amount to add them to the pot. Type "Brew" to finish the mixture.
+                """;
     }
 
 }
