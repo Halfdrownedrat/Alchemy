@@ -12,7 +12,8 @@ public class Alch{
     static Map<String, int[]> aspects = new HashMap<>();
 
     // Aggregatszustände 
-    final static String[] states = {"", "Sliced ", "Powdered ", "Dissolved ", "Destillet ", "Crystalline "}; // 
+    // States Nrm, Slc, Pwd, dis, des, Cri == Normal, Sliced, Powddered, Dissolved, Destilled, Cristalline
+    final static String[] states = {" Nrm", "Slc ", "Pwd ", "Dis ", "Des ", "Cri "}; // 
     int[] aspectValues;
 
 
@@ -94,18 +95,38 @@ public class Alch{
 
     // Print out ALL the info 
     // Needs some compacter formatting later, a table would be smart
-    public static void OUT_ALL(){
+    // Fixed with Copilot
+    public static void OUT_ALL() {
         clearScreen();
+    
+        // Define column widths
+        int ingredientColumnWidth = 15; // Width for the ingredient name
+        int stateColumnWidth = 8;      // Width for each state
+    
+        // Print header
+        System.out.printf("%-" + ingredientColumnWidth + "s", "Ingredient");
+        for (int i = 0; i < 5; i++) {
+            System.out.printf("%-" + stateColumnWidth + "s", states[i]);
+        }
+        System.out.println(); // New line
+        System.out.println("-".repeat(ingredientColumnWidth + stateColumnWidth * 5)); // Separator line
+    
+        // Print table rows
         for (Map.Entry<String, int[]> entry : ingredients.entrySet()) {
             String ingredient = entry.getKey();
             int[] counts = entry.getValue();
-            System.out.println("Ingredient: " + ingredient);
-            for (int i = 0; i < 4; i++) {
-                System.out.println(states[i] + ingredient +" x" + counts[i]);
+    
+            // Print the ingredient name with padding
+            System.out.printf("%-" + ingredientColumnWidth + "s", ingredient);
+    
+            // Print counts with consistent column width
+            for (int count : counts) {
+                System.out.printf("%-" + stateColumnWidth + "s", "x" + count);
             }
-            System.out.println();
+            System.out.println(); // New line
         }
     }
+    
 
     // print out a data about a single ingredient
     public static void OUT_SINGLE(String ingredient){
