@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException; 
+import java.util.Arrays;
 import java.util.HashMap; // https://www.w3schools.com/java/java_hashmap.asp
 import java.util.Map;
 import java.util.Scanner;
@@ -13,6 +14,7 @@ public class Alch{
     // Aggregatszustände 
     final static String[] states = {"", "Sliced ", "Powdered ", "Dissolved ", "Destillet ", "Crystalline "}; // 
     int[] aspectValues;
+
 
     public static void main(String[] args) {
         startUp();
@@ -166,8 +168,35 @@ public class Alch{
     public static void Brew(Scanner scanner){
         clearScreen();
         OUT_ALL();
+        System.out.println("--------------------------------------------------------------------");
         System.out.println(GetTextblock());
         System.out.println("--------------------------------------------------------------------");
+        System.out.println("Enter the ingredient and the amount to sacrefice to the pot");
+        String putIN = " ";
+        Alch mainPot = new Alch(999);// Standart Debugging Pot and the only one in the current version
+        while (true) {
+            getPotData(mainPot);
+            if (putIN.equals("exit")) {
+                break;
+            }
+            putIN = scanner.nextLine();
+            if (!ingredients.containsKey(putIN)) {
+                System.out.println("Ingredient does not exist!");
+                continue;
+            }
+            //
+            // Need some better way to call the correct Ingredient
+            //
+            ingredients.get(putIN)[0]--;
+            mainPot.changeIngredient(putIN, 1);
+
+        }
+        menu(scanner);
+    }
+
+    public static void getPotData(Alch currentPot){
+        System.out.println("You have those things in your pot:");
+        System.out.println("Air, Fire, Earth, Water, Order, Entropy, Chaos, Flux\n" + Arrays.toString(currentPot.aspectValues));
     }
 
     // Creates an Object of the brewing pot, maily doing it this way to train for university
@@ -191,7 +220,7 @@ public class Alch{
     public void changeIngredient(String material, int action){
         ingredients.get(material)[0]--;
         for (int i = 0; i < this.aspectValues.length; i++) {
-            this.aspectValues[i]= action * aspects.get(material)[i];
+            this.aspectValues[i]+= action * aspects.get(material)[i];
         }
     }
 
