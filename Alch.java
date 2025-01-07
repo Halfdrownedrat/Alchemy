@@ -1,22 +1,33 @@
 import java.io.File;
-import java.io.FileNotFoundException; // https://www.w3schools.com/java/java_hashmap.asp
-import java.util.HashMap;
+import java.io.FileNotFoundException; 
+import java.util.HashMap; // https://www.w3schools.com/java/java_hashmap.asp
 import java.util.Map;
 import java.util.Scanner;
 
 
 public class Alch{
+    // Taking in the game values
     static Map<String, int[]> ingredients = new HashMap<>();
     static Map<String, int[]> aspects = new HashMap<>();
-    final static String[] states = {"", "Sliced ", "Powdered ", "Dissolved ", "Destillet ", "Crystalline "}; // 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        FileToHash("ingredients.csv", ingredients);
-        FileToHash("aspects.csv", aspects);
 
+    // Aggregatszustände 
+    final static String[] states = {"", "Sliced ", "Powdered ", "Dissolved ", "Destillet ", "Crystalline "}; // 
+    int[] aspectValues;
+
+    public static void main(String[] args) {
+        startUp();
+        Scanner scanner = new Scanner(System.in);
         menu(scanner);
     }
+    // Called before  the game actually does stuff  
+    public static void startUp(){
+        FileToHash("ingredients.csv", ingredients);
+        FileToHash("aspects.csv", aspects);
+    }
+    
+    // Main Menu that gets called everytime the type of action changes
     public static void menu(Scanner scanner){
+        System.out.println("--------------------------------------------------------------------");
         System.out.println("View Inventory: 0, Convert Material: 1, Visit City: 2, Brew: 3, Nothing: 4, Exit: 5");
         String dec = scanner.nextLine();
         switch (dec) {
@@ -77,11 +88,12 @@ public class Alch{
 
     // Write Data to file to save it for the next session
     public static void Saving(){
-
     }
 
     // Print out ALL the info 
+    // Needs some compacter formatting later, a table would be smart
     public static void OUT_ALL(){
+        clearScreen();
         for (Map.Entry<String, int[]> entry : ingredients.entrySet()) {
             String ingredient = entry.getKey();
             int[] counts = entry.getValue();
@@ -93,7 +105,9 @@ public class Alch{
         }
     }
 
+    // print out a data about a single ingredient
     public static void OUT_SINGLE(String ingredient){
+        clearScreen();
         int[] counts = ingredients.get(ingredient);
         System.out.println("Ingredient: " + ingredient);
         for (int i = 0; i < 4; i++) {
@@ -143,19 +157,46 @@ public class Alch{
     }
 
     public static void City(Scanner scanner){
+        clearScreen();
         System.out.println("Welcome to the city, there is nothing yet here.");
         System.out.println(GetTextblock2());
         menu(scanner);
     }
 
     public static void Brew(Scanner scanner){
+        clearScreen();
         OUT_ALL();
         System.out.println(GetTextblock());
         System.out.println("--------------------------------------------------------------------");
-
     }
 
-    public static String GetTextblock(){
+    // Creates an Object of the brewing pot, maily doing it this way to train for university
+    public Alch(int Capacity){
+        //Air, Fire, Earth, Water, Order, Entropy, Chaos, Flux
+        aspectValues = new int[5];
+    }
+
+    // Checks if the brewing pot contains enough of the wanted aspects
+    public boolean isEnough(Alch currentPot){
+        for (int i = 0; i < currentPot.aspectValues.length; i++) {
+            if (this.aspectValues[i] < currentPot.aspectValues[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Material is from the aspects and ingredients hash
+    // action is -1 for subtraction, 1 for addition, > |1| for multiplieng
+    public void changeIngredient(String material, int action){
+        ingredients.get(material)[0]--;
+        for (int i = 0; i < this.aspectValues.length; i++) {
+            this.aspectValues[i]= action * aspects.get(material)[i];
+        }
+    }
+
+    // The Text Block Stuff is fun and usefull but blocks to much space
+    private static String GetTextblock(){
         return """
                 Enter Up to 5 different ingredients to the pot.
                 Leftovers can only be voidet at the moment, unlock newer tech/ wait for a newer game version to change that.
@@ -163,32 +204,37 @@ public class Alch{
                 """;
     }
 
-    public static String GetTextblock2(){
+    private  static String GetTextblock2(){
         return """
-                          _____                    _____            _____                    _____                   _______                   _____          
-         /\\    \\                  /\\    \\          /\\    \\                  /\\    \\                 /::\\    \\                 /\\    \\         
-        /::\\    \\                /::\\____\\        /::\\    \\                /::\\____\\               /::::\\    \\               /::\\    \\        
-       /::::\\    \\              /:::/    /       /::::\\    \\              /:::/    /              /::::::\\    \\             /::::\\    \\       
-      /::::::\\    \\            /:::/    /       /::::::\\    \\            /:::/    /              /::::::::\\    \\           /::::::\\    \\      
-     /:::/\\:::\\    \\          /:::/    /       /:::/\\:::\\    \\          /:::/    /              /:::/~~\\:::\\    \\         /:::/\\:::\\    \\     
-    /:::/__\\:::\\    \\        /:::/    /       /:::/  \\:::\\    \\        /:::/____/              /:::/    \\:::\\    \\       /:::/__\\:::\\    \\    
-   /::::\\   \\:::\\    \\      /:::/    /       /:::/    \\:::\\    \\      /::::\\    \\             /:::/    / \\:::\\    \\      \\:::\\   \\:::\\    \\   
-  /::::::\\   \\:::\\    \\    /:::/    /       /:::/    / \\:::\\    \\    /::::::\\    \\   _____   /:::/____/   \\:::\\____\\   ___\\:::\\   \\:::\\    \\  
- /:::/\\:::\\   \\:::\\    \\  /:::/    /       /:::/    /   \\:::\\    \\  /:::/\\:::\\    \\ /\\    \\ |:::|    |     |:::|    | /\\   \\:::\\   \\:::\\    \\ 
-/:::/  \\:::\\   \\:::\\____\\/:::/____/       /:::/____/     \\:::\\____\\/:::/  \\:::\\    /::\\____\\|:::|____|     |:::|    |/::\\   \\:::\\   \\:::\\____\\
-\\::/    \\:::\\  /:::/    /\\:::\\    \\       \\:::\\    \\      \\::/    /\\::/    \\:::\\  /:::/    / \\:::\\    \\   /:::/    / \\:::\\   \\:::\\   \\::/    /
- \\/____/ \\:::\\/:::/    /  \\:::\\    \\       \\:::\\    \\      \\/____/  \\/____/ \\:::\\/:::/    /   \\:::\\    \\ /:::/    /   \\:::\\   \\:::\\   \\/____/ 
-          \\::::::/    /    \\:::\\    \\       \\:::\\    \\                       \\::::::/    /     \\:::\\    /:::/    /     \\:::\\   \\:::\\    \\     
-           \\::::/    /      \\:::\\    \\       \\:::\\    \\                       \\::::/    /       \\:::\\__/:::/    /       \\:::\\   \\:::\\____\\    
-           /:::/    /        \\:::\\    \\       \\:::\\    \\                      /:::/    /         \\::::::::/    /         \\:::\\  /:::/    /    
-          /:::/    /          \\:::\\    \\       \\:::\\    \\                    /:::/    /           \\::::::/    /           \\:::\\/:::/    /     
-         /:::/    /            \\:::\\    \\       \\:::\\    \\                  /:::/    /             \\::::/    /             \\::::::/    /      
-        /:::/    /              \\:::\\____\\       \\:::\\____\\                /:::/    /               \\::/____/               \\::::/    /       
-        \\::/    /                \\::/    /        \\::/    /                \\::/    /                 ~~                      \\::/    /        
-         \\/____/                  \\/____/          \\/____/                  \\/____/                                           \\/____/         
+                                _____                    _____            _____                    _____                   _______                   _____          
+                    /\\    \\                  /\\    \\          /\\    \\                  /\\    \\                 /::\\    \\                 /\\    \\         
+                    /::\\    \\                /::\\____\\        /::\\    \\                /::\\____\\               /::::\\    \\               /::\\    \\        
+                /::::\\    \\              /:::/    /       /::::\\    \\              /:::/    /              /::::::\\    \\             /::::\\    \\       
+                /::::::\\    \\            /:::/    /       /::::::\\    \\            /:::/    /              /::::::::\\    \\           /::::::\\    \\      
+                /:::/\\:::\\    \\          /:::/    /       /:::/\\:::\\    \\          /:::/    /              /:::/~~\\:::\\    \\         /:::/\\:::\\    \\     
+                /:::/__\\:::\\    \\        /:::/    /       /:::/  \\:::\\    \\        /:::/____/              /:::/    \\:::\\    \\       /:::/__\\:::\\    \\    
+            /::::\\   \\:::\\    \\      /:::/    /       /:::/    \\:::\\    \\      /::::\\    \\             /:::/    / \\:::\\    \\      \\:::\\   \\:::\\    \\   
+            /::::::\\   \\:::\\    \\    /:::/    /       /:::/    / \\:::\\    \\    /::::::\\    \\   _____   /:::/____/   \\:::\\____\\   ___\\:::\\   \\:::\\    \\  
+            /:::/\\:::\\   \\:::\\    \\  /:::/    /       /:::/    /   \\:::\\    \\  /:::/\\:::\\    \\ /\\    \\ |:::|    |     |:::|    | /\\   \\:::\\   \\:::\\    \\ 
+            /:::/  \\:::\\   \\:::\\____\\/:::/____/       /:::/____/     \\:::\\____\\/:::/  \\:::\\    /::\\____\\|:::|____|     |:::|    |/::\\   \\:::\\   \\:::\\____\\
+            \\::/    \\:::\\  /:::/    /\\:::\\    \\       \\:::\\    \\      \\::/    /\\::/    \\:::\\  /:::/    / \\:::\\    \\   /:::/    / \\:::\\   \\:::\\   \\::/    /
+            \\/____/ \\:::\\/:::/    /  \\:::\\    \\       \\:::\\    \\      \\/____/  \\/____/ \\:::\\/:::/    /   \\:::\\    \\ /:::/    /   \\:::\\   \\:::\\   \\/____/ 
+                    \\::::::/    /    \\:::\\    \\       \\:::\\    \\                       \\::::::/    /     \\:::\\    /:::/    /     \\:::\\   \\:::\\    \\     
+                    \\::::/    /      \\:::\\    \\       \\:::\\    \\                       \\::::/    /       \\:::\\__/:::/    /       \\:::\\   \\:::\\____\\    
+                    /:::/    /        \\:::\\    \\       \\:::\\    \\                      /:::/    /         \\::::::::/    /         \\:::\\  /:::/    /    
+                    /:::/    /          \\:::\\    \\       \\:::\\    \\                    /:::/    /           \\::::::/    /           \\:::\\/:::/    /     
+                    /:::/    /            \\:::\\    \\       \\:::\\    \\                  /:::/    /             \\::::/    /             \\::::::/    /      
+                    /:::/    /              \\:::\\____\\       \\:::\\____\\                /:::/    /               \\::/____/               \\::::/    /       
+                    \\::/    /                \\::/    /        \\::/    /                \\::/    /                 ~~                      \\::/    /        
+                    \\/____/                  \\/____/          \\/____/                  \\/____/                                           \\/____/         
 
                                                                                                  
                 """;
     }
 
+    // Clears the screen completly, does not work on windows (propably)
+    public static void clearScreen() {  
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();  
+    }  
 }
