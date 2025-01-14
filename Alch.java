@@ -148,29 +148,35 @@ public class Alch{
             System.out.println("Material not found: " + material);
             return;
         }
-        switch (action) {
+
+        switch (action){
             case "slice" -> {
                 // Slice
+                if(ingredients.get(material)[0] -2 < 0) break;
                 ingredients.get(material)[0] -= 2;
                 ingredients.get(material)[1] += 1;
             }
             case "grind" -> {
                 // Grind
+                if(ingredients.get(material)[1] -2 < 0) break;
                 ingredients.get(material)[1] -= 2;
                 ingredients.get(material)[2] += 1;
             }
             case "dissolve" -> {
                 // Dissolve
+                if(ingredients.get(material)[2] -2 < 0) break;
                 ingredients.get(material)[2] -= 2;
                 ingredients.get(material)[3] += 1;
             }
             case "destill" -> {
                 // Destill
+                if(ingredients.get(material)[3] -2 < 0) break;
                 ingredients.get(material)[3] -= 2;
                 ingredients.get(material)[4] += 1;
             }
             case "crystelize" -> {
                 // Crystallize
+                if(ingredients.get(material)[4] -2 < 0) break;
                 ingredients.get(material)[4] -= 2;
                 ingredients.get(material)[5] += 1;
             }
@@ -182,7 +188,6 @@ public class Alch{
     public static void City(Scanner scanner){
         clearScreen();
         System.out.println("Welcome to the city, there is nothing yet here.");
-        System.out.println(GetTextblock2());
         menu(scanner);
     }
 
@@ -269,33 +274,6 @@ public class Alch{
                 """;
     }
 
-    private  static String GetTextblock2(){
-        return """
-                                _____                    _____            _____                    _____                   _______                   _____          
-                    /\\    \\                  /\\    \\          /\\    \\                  /\\    \\                 /::\\    \\                 /\\    \\         
-                    /::\\    \\                /::\\____\\        /::\\    \\                /::\\____\\               /::::\\    \\               /::\\    \\        
-                /::::\\    \\              /:::/    /       /::::\\    \\              /:::/    /              /::::::\\    \\             /::::\\    \\       
-                /::::::\\    \\            /:::/    /       /::::::\\    \\            /:::/    /              /::::::::\\    \\           /::::::\\    \\      
-                /:::/\\:::\\    \\          /:::/    /       /:::/\\:::\\    \\          /:::/    /              /:::/~~\\:::\\    \\         /:::/\\:::\\    \\     
-                /:::/__\\:::\\    \\        /:::/    /       /:::/  \\:::\\    \\        /:::/____/              /:::/    \\:::\\    \\       /:::/__\\:::\\    \\    
-            /::::\\   \\:::\\    \\      /:::/    /       /:::/    \\:::\\    \\      /::::\\    \\             /:::/    / \\:::\\    \\      \\:::\\   \\:::\\    \\   
-            /::::::\\   \\:::\\    \\    /:::/    /       /:::/    / \\:::\\    \\    /::::::\\    \\   _____   /:::/____/   \\:::\\____\\   ___\\:::\\   \\:::\\    \\  
-            /:::/\\:::\\   \\:::\\    \\  /:::/    /       /:::/    /   \\:::\\    \\  /:::/\\:::\\    \\ /\\    \\ |:::|    |     |:::|    | /\\   \\:::\\   \\:::\\    \\ 
-            /:::/  \\:::\\   \\:::\\____\\/:::/____/       /:::/____/     \\:::\\____\\/:::/  \\:::\\    /::\\____\\|:::|____|     |:::|    |/::\\   \\:::\\   \\:::\\____\\
-            \\::/    \\:::\\  /:::/    /\\:::\\    \\       \\:::\\    \\      \\::/    /\\::/    \\:::\\  /:::/    / \\:::\\    \\   /:::/    / \\:::\\   \\:::\\   \\::/    /
-            \\/____/ \\:::\\/:::/    /  \\:::\\    \\       \\:::\\    \\      \\/____/  \\/____/ \\:::\\/:::/    /   \\:::\\    \\ /:::/    /   \\:::\\   \\:::\\   \\/____/ 
-                    \\::::::/    /    \\:::\\    \\       \\:::\\    \\                       \\::::::/    /     \\:::\\    /:::/    /     \\:::\\   \\:::\\    \\     
-                    \\::::/    /      \\:::\\    \\       \\:::\\    \\                       \\::::/    /       \\:::\\__/:::/    /       \\:::\\   \\:::\\____\\    
-                    /:::/    /        \\:::\\    \\       \\:::\\    \\                      /:::/    /         \\::::::::/    /         \\:::\\  /:::/    /    
-                    /:::/    /          \\:::\\    \\       \\:::\\    \\                    /:::/    /           \\::::::/    /           \\:::\\/:::/    /     
-                    /:::/    /            \\:::\\    \\       \\:::\\    \\                  /:::/    /             \\::::/    /             \\::::::/    /      
-                    /:::/    /              \\:::\\____\\       \\:::\\____\\                /:::/    /               \\::/____/               \\::::/    /       
-                    \\::/    /                \\::/    /        \\::/    /                \\::/    /                 ~~                      \\::/    /        
-                    \\/____/                  \\/____/          \\/____/                  \\/____/                                           \\/____/         
-
-                                                                                                 
-                """;
-    }
 
     // Clears the screen completly, does not work on windows (propably)
     public static void clearScreen() {  
