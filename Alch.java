@@ -204,39 +204,46 @@ public class Alch{
         System.out.println("--------------------------------------------------------------------");
         System.out.println("Enter the ingredient and the amount to sacrefice to the pot");
         String putIN = " ";
+        int amount;
         Alch mainPot = new Alch(50);// Standart Pot and the only one in the current version
         while (true) {
+            clearScreen();
+            OUT_ALL();
             getPotData(mainPot);
             if (putIN.equals("exit")) {
                 break;
             }
-            putIN = scanner.nextLine();
+            String line = scanner.nextLine();
+            String[] parts = line.split(" ");
+            putIN = parts[0];
+            // Try Catch to set the amount to one if no amount is given
+            try {
+                amount = Integer.parseInt(parts[1]);
+                amount = Math.abs(amount); // Just ignoring the minus and making it positive
+                if (amount == 0) amount = 1; // Player is stupid, setting amount to 1
+            } catch (Exception e) {
+                amount = 1;
+            }
             if (!ingredients.containsKey(putIN)) {
                 System.out.println("Ingredient does not exist!");
                 continue;
             }
+            
             //
             // Need some better way to call the correct Ingredient
             // Currently only uses the starting resoure
             //
-            ingredients.get(putIN)[0]--;
-            mainPot.changeIngredient(putIN, 1);
+            if (ingredients.get(putIN)[0] - amount >= 0) {
+                ingredients.get(putIN)[0] -= amount;
+            }else{
+                int missing = Math.abs(ingredients.get(putIN)[0] - amount);
+                amount -= missing;
+                System.out.println("You dont have that much: Putting in:" + amount);
+            }
+            mainPot.changeIngredient(putIN, 1, amount);
 
         }
         menu(scanner);
-    }
-
-    public static void getPotData(Alch currentPot){
-        System.out.println("You have those things in your pot:");
-        System.out.println("Air, Fire, Earth, Water, Order, Entropy, Chaos, Flux\n" + Arrays.toString(currentPot.aspectValues));
-    }
-    public static boolean hasSpace(Alch currentPot){
-        int occupied = 0;
-        for (int i = 0; i < currentPot.aspectValues.length; i++) {
-            occupied += currentPot.aspectValues[i];
-        }
-        return occupied < currentPot.capacity;
-
     }
 
     // Creates an Object of the brewing pot, maily doing it this way to train for university
@@ -256,24 +263,42 @@ public class Alch{
         return true;
     }
 
+    public static void getPotData(Alch currentPot){
+        System.out.println("You have those things in your pot:");
+        System.out.println("Air, Fire, Earth, Water, Order, Entropy, Chaos, Flux\n" + Arrays.toString(currentPot.aspectValues));
+    }
+    public static boolean hasSpace(Alch currentPot){
+        // Currently views all aspects as one mashed together value
+        int occupied = 0;
+        for (int i = 0; i < currentPot.aspectValues.length; i++) {
+            occupied += currentPot.aspectValues[i];
+        }
+        return occupied < currentPot.capacity;
+
+    }
     // Material is from the aspects and ingredients hash
     // action is -1 for subtraction, 1 for addition, > |1| for multiplieng
-    public void changeIngredient(String material, int action){
-        ingredients.get(material)[0]--;
+    public void changeIngredient(String material, int action, int amount){
         for (int i = 0; i < this.aspectValues.length; i++) {
             if (!hasSpace(this)) {
                 System.out.println("Cauldren is full");
                 break;
             }
-            this.aspectValues[i]+= action * aspects.get(material)[i];
-
+            this.aspectValues[i]+= action * aspects.get(material)[i] * amount;
+            // Can Create a small overflorw since it checks if there is space before an potentialy limitless amount of stuff is added
+            // Solution is just calling the hasSpace Function again and removing overshoot
+            if (!hasSpace(this)) {
+                System.out.println("Cauldren would be overflorwing"); // Not visible since the clearScreen clears it immidiatly
+                this.aspectValues[i]-= action * aspects.get(material)[i] * amount;
+                break;
+            }
         }
     }
 
     // The Text Block Stuff is fun and usefull but blocks to much space
     private static String GetTextblock(){
         return """
-                Enter Up to 999 different ingredients to the pot.
+                Enter Up to 50 different ingredients to the pot.
                 Leftovers can only be voidet at the moment, unlock newer tech/ wait for a newer game version to change that.
                 Enter the Name and Amount to add them to the pot. Type "Brew" to finish the mixture.
                 """;
