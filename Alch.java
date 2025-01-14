@@ -41,11 +41,14 @@ public class Alch{
 
             }
             case "1"->{
+                OUT_ALL();
                 System.out.println("Choose material");
                 String material = scanner.nextLine();
                 System.out.println("Choose action\n Actions: slice, grind, dissolve, destill, crystelize");
                 String action = scanner.nextLine();
-                Convert(action, material);
+                System.out.println("How much?");
+                int amount = scanner.nextInt();
+                Convert(action, material, amount);
                 menu(scanner);
 
             }
@@ -141,44 +144,46 @@ public class Alch{
 
     // Convert states for ingrediants
     // Takes String Input for conversion
-    public static void Convert(String action, String material){
+    public static void Convert(String action, String material, int amount){
         action = action.trim().toLowerCase(); // Removing accidental whitespaces and making everythin even
         material = material.trim(); // Can not be set to all lowercase since I store them like this: Material
         if (!ingredients.containsKey(material)) {
             System.out.println("Material not found: " + material);
             return;
         }
+        int minus = -2 * amount;
+        int plus = 1 * amount;
 
         switch (action){
             case "slice" -> {
                 // Slice
-                if(ingredients.get(material)[0] -2 < 0) break;
-                ingredients.get(material)[0] -= 2;
-                ingredients.get(material)[1] += 1;
+                if(ingredients.get(material)[0] + minus < 0) break;
+                ingredients.get(material)[0] += minus;
+                ingredients.get(material)[1] += plus;
             }
             case "grind" -> {
                 // Grind
-                if(ingredients.get(material)[1] -2 < 0) break;
-                ingredients.get(material)[1] -= 2;
-                ingredients.get(material)[2] += 1;
+                if(ingredients.get(material)[1] + minus < 0) break;
+                ingredients.get(material)[1] += minus;
+                ingredients.get(material)[2] += plus;
             }
             case "dissolve" -> {
                 // Dissolve
-                if(ingredients.get(material)[2] -2 < 0) break;
-                ingredients.get(material)[2] -= 2;
-                ingredients.get(material)[3] += 1;
+                if(ingredients.get(material)[2] + minus < 0) break;
+                ingredients.get(material)[2] += minus;
+                ingredients.get(material)[3] += plus;
             }
             case "destill" -> {
                 // Destill
-                if(ingredients.get(material)[3] -2 < 0) break;
-                ingredients.get(material)[3] -= 2;
-                ingredients.get(material)[4] += 1;
+                if(ingredients.get(material)[3] + minus < 0) break;
+                ingredients.get(material)[3] += minus;
+                ingredients.get(material)[4] += plus;
             }
             case "crystelize" -> {
                 // Crystallize
-                if(ingredients.get(material)[4] -2 < 0) break;
-                ingredients.get(material)[4] -= 2;
-                ingredients.get(material)[5] += 1;
+                if(ingredients.get(material)[4] + minus < 0) break;
+                ingredients.get(material)[4] += minus;
+                ingredients.get(material)[5] += plus;
             }
             default -> System.out.println("Wrong Action!!!");
         }
