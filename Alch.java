@@ -1,9 +1,7 @@
-import java.io.File;
-import java.io.FileNotFoundException; 
 import java.util.Arrays;
-import java.util.HashMap; // https://www.w3schools.com/java/java_hashmap.asp
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
+import java.util.Scanner; // https://www.w3schools.com/java/java_hashmap.asp
 
 
 public class Alch{
@@ -25,8 +23,8 @@ public class Alch{
     }
     // Called before  the game actually does stuff  
     public static void startUp(){
-        FileToHash("ingredients.csv", ingredients, 5);
-        FileToHash("aspects.csv", aspects, 25);
+        Util.FileToHash("ingredients.csv", ingredients, 5);
+        Util.FileToHash("aspects.csv", aspects, 25);
     }
     
     // Main Menu that gets called everytime the type of action changes
@@ -72,36 +70,9 @@ public class Alch{
         }
     }
 
-    // Read data from file and store it in hasmap for easier working
-    // csv needs to be whitespace free
-    public static void FileToHash(String file, Map<String, int[]> map, int valueAmount){
-        File ing = new File(file);
-        try (Scanner fileScanner = new Scanner(ing)) {
-            fileScanner.nextLine(); // Skip the first line since it has comments in it
-            while (fileScanner.hasNextLine()) {
-                String line = fileScanner.nextLine();
-                String[] parts = line.split(",");
-                String ingredient = (String) parts[0];
-                int[] counts = new int[valueAmount];
-                for (int i = 1; i < parts.length; i++) {
-                    counts[i - 1] = Integer.parseInt(parts[i]);
-                }
-                map.put(ingredient, counts);
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found: " + e.getMessage());
-        }
-    }
-
-    // Write Data to file to save it for the next session
-    public static void Saving(){
-    }
-
     // Print out ALL the info 
     // Fixed with Copilot
-    public static void OUT_ALL() {
-        clearScreen();
-    
+    public static void OUT_ALL() {    
         // Define column widths
         int ingredientColumnWidth = 15; // Width for the ingredient name
         int stateColumnWidth = 8;      // Width for each state
@@ -133,7 +104,7 @@ public class Alch{
 
     // print out a data about a single ingredient
     public static void OUT_SINGLE(String ingredient){
-        clearScreen();
+        Util.clearScreen();
         int[] counts = ingredients.get(ingredient);
         System.out.println("Ingredient: " + ingredient);
         for (int i = 0; i < 4; i++) {
@@ -191,23 +162,21 @@ public class Alch{
     }
 
     public static void City(Scanner scanner){
-        clearScreen();
+        Util.clearScreen();
         System.out.println("Welcome to the city, there is nothing yet here.");
         menu(scanner);
     }
 
     public static void Brew(Scanner scanner){
-        clearScreen();
-        OUT_ALL();
+        Util.clearScreen();
         System.out.println("--------------------------------------------------------------------");
-        System.out.println(GetTextblock());
+        System.out.println(Textblocks.GiveText("Pot"));
         System.out.println("--------------------------------------------------------------------");
         System.out.println("Enter the ingredient and the amount to sacrefice to the pot");
         String putIN = " ";
         int amount;
         Alch mainPot = new Alch(50);// Standart Pot and the only one in the current version
         while (true) {
-            clearScreen();
             OUT_ALL();
             getPotData(mainPot);
             if (putIN.equals("exit")) {
@@ -294,20 +263,4 @@ public class Alch{
             }
         }
     }
-
-    // The Text Block Stuff is fun and usefull but blocks to much space
-    private static String GetTextblock(){
-        return """
-                Enter Up to 50 different ingredients to the pot.
-                Leftovers can only be voidet at the moment, unlock newer tech/ wait for a newer game version to change that.
-                Enter the Name and Amount to add them to the pot. Type "Brew" to finish the mixture.
-                """;
-    }
-
-
-    // Clears the screen completly, does not work on windows (propably)
-    public static void clearScreen() {  
-        System.out.print("\033[H\033[2J");  
-        System.out.flush();  
-    }  
 }
